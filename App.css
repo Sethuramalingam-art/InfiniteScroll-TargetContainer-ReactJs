@@ -1,0 +1,5 @@
+.infinite-scroll-container {
+  border: 1px solid;
+  height: 300px;
+  overflow-y: auto;
+}
