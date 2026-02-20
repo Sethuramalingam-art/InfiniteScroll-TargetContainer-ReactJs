@@ -1,9 +1,22 @@
 import { useEffect, useState } from "react";
+import useThrottle from "./hooks/useThrottle";
 
 const InfiniteScrollPractise = () => {
   const [count, setCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState([]);
+
+  const handleContainerScroll = (e) => {
+    const targetContainer = e.target;
+    if (
+      targetContainer.clientHeight + targetContainer.scrollTop >=
+      targetContainer.scrollHeight
+    ) {
+      setCount((prevCount) => prevCount + 10);
+    }
+  };
+
+  const thorttleFunc = useThrottle(handleContainerScroll, 10000);
   useEffect(() => {
     // For window scroll
     // const handleScroll = () => {
@@ -13,27 +26,16 @@ const InfiniteScrollPractise = () => {
     // };
     // window.addEventListener("scroll", handleScroll);
     if (isLoading) return;
-    const handleContainerScroll = (e) => {
-      const targetContainer = e.target;
-      console.log("reached bottom");
-      if (
-        targetContainer.clientHeight + targetContainer.scrollTop >=
-        targetContainer.scrollHeight
-      ) {
-        console.log("reached bottom of container");
-        setCount((prevCount) => prevCount + 10);
-      }
-    };
 
     // for target container scroll
     const container = document.querySelector(".infinite-scroll-container");
-    container.addEventListener("scroll", handleContainerScroll);
+    container.addEventListener("scroll", thorttleFunc);
 
     return () => {
       // window.removeEventListener("scroll", handleScroll);
-      container.removeEventListener("scroll", handleContainerScroll);
+      container.removeEventListener("scroll", thorttleFunc);
     };
-  }, [isLoading]);
+  }, [isLoading, thorttleFunc]);
 
   useEffect(() => {
     // Simulating API call to fetch more data
